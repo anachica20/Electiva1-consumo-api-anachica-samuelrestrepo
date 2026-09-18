@@ -1,9 +1,10 @@
 import type { ResponseCharacter, Character } from '../types/api'
 
-export const getCharacters = async (): Promise<ResponseCharacter> => {
+export const getCharacters = async (signal?: AbortSignal
+): Promise<ResponseCharacter> => {
   const baseUrl = 'https://rickandmortyapi.com/api/character'
 
-  const response = await fetch(baseUrl)
+  const response = await fetch(baseUrl, { signal })
 
   if (!response.ok) {
     throw new Error(`Failed to fetch characters: ${response.status}`)
@@ -14,10 +15,12 @@ export const getCharacters = async (): Promise<ResponseCharacter> => {
   return data
 }
 
-export const getCharacterById = async (id: number): Promise<Character> => {
+export const getCharacterById = async (id: number,
+  signal?: AbortSignal
+): Promise<Character> => {
   const baseUrl = `https://rickandmortyapi.com/api/character/${id}`
 
-  const response = await fetch(baseUrl)
+  const response = await fetch(baseUrl, { signal })
 
   if (!response.ok) {
     throw new Error(`Failed to fetch character: ${response.status}`)
@@ -30,11 +33,12 @@ export const getCharacterById = async (id: number): Promise<Character> => {
 
 export const getCharactersByName = async (
   name: string,
+  signal?: AbortSignal
 ): Promise<ResponseCharacter | null> => {
   const search = encodeURIComponent(name.trim())
   const baseUrl = `https://rickandmortyapi.com/api/character?name=${search}`
 
-  const response = await fetch(baseUrl)
+  const response = await fetch(baseUrl, { signal })
 
   if (response.status === 404) {
     return null
