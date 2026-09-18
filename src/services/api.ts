@@ -27,3 +27,24 @@ export const getCharacterById = async (id: number): Promise<Character> => {
 
   return data
 }
+
+export const getCharactersByName = async (
+  name: string,
+): Promise<ResponseCharacter | null> => {
+  const search = encodeURIComponent(name.trim())
+  const baseUrl = `https://rickandmortyapi.com/api/character?name=${search}`
+
+  const response = await fetch(baseUrl)
+
+  if (response.status === 404) {
+    return null
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to search characters: ${response.status}`)
+  }
+
+  const data = (await response.json()) as ResponseCharacter
+
+  return data
+}
