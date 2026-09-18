@@ -1,6 +1,11 @@
+import type { Character } from "../types/api";
 import TarjetaElementos from "./TarjetaElementos";
 
-const ListaElementos = ({ personajes }) => {
+interface ListaElementosProps {
+    personajes: Character[];
+}
+
+const ListaElementos = ({ personajes }: ListaElementosProps) => {
     return (
         <section className="lista-elementos">
             <h2>Personajes</h2>
