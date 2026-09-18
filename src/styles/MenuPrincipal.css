@@ -1,0 +1,47 @@
+.menu-principal {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.menu-header button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu-contenido h2 {
+    margin-bottom: 20px;
+}
+
+.busqueda-placeholder {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.lista-placeholder {
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #aaa;
+    border-radius: 10px;
+}
