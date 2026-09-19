@@ -3,9 +3,10 @@ import TarjetaElementos from "./TarjetaElementos";
 
 interface ListaElementosProps {
     personajes: Character[];
+    onSeleccionar: (personaje: Character) => void;
 }
 
-const ListaElementos = ({ personajes }: ListaElementosProps) => {
+const ListaElementos = ({ personajes, onSeleccionar }: ListaElementosProps) => {
     return (
         <section className="lista-elementos">
             <h2>Personajes</h2>
@@ -15,6 +16,7 @@ const ListaElementos = ({ personajes }: ListaElementosProps) => {
                     <TarjetaElementos
                         key={personaje.id}
                         personaje={personaje}
+                        onSeleccionar={onSeleccionar}
                     />
                 ))}
             </div>

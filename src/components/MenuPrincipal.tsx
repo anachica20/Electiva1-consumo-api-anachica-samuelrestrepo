@@ -4,11 +4,13 @@ import type { Character } from '../types/api'
 import { getCharacters } from '../services/api'
 import EstadoMensaje from './EstadoMensaje'
 import ListaElementos from './ListaElementos'
+import DetalleElemento from './DetalleElemento'
 
 export default function MenuPrincipal() {
   const [personajes, setPersonajes] = useState<Character[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [personajeSeleccionado, setPersonajeSeleccionado] = useState<Character | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -56,7 +58,12 @@ export default function MenuPrincipal() {
         <h2>Personajes</h2>
         <div className="busqueda-placeholder">Buscar personaje...</div>
 
-        {loading ? (
+        {personajeSeleccionado ? (
+          <DetalleElemento
+            personaje={personajeSeleccionado}
+            onVolver={() => setPersonajeSeleccionado(null)}
+          />
+        ) : loading ? (
           <EstadoMensaje type="cargando" message="Cargando personajes..." />
         ) : error ? (
           <EstadoMensaje type="error" message={error} />
@@ -66,7 +73,10 @@ export default function MenuPrincipal() {
             message="No se encontraron personajes."
           />
         ) : (
-          <ListaElementos personajes={personajes} />
+          <ListaElementos
+            personajes={personajes}
+            onSeleccionar={setPersonajeSeleccionado}
+          />
         )}
       </section>
     </main>
