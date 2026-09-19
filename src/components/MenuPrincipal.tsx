@@ -25,6 +25,31 @@ export default function MenuPrincipal() {
   const [busqueda, setBusqueda] = useState('')
   const [intento, setIntento] = useState(0)
 
+  const [favoritos, setFavoritos] = useState<number[]>(() => {
+    const favoritosGuardados = localStorage.getItem('favoritos')
+
+    if (!favoritosGuardados) {
+      return []
+    }
+
+    try {
+      const datos: unknown = JSON.parse(favoritosGuardados)
+
+      if (
+        Array.isArray(datos) &&
+        datos.every((id) => typeof id === 'number')
+      ) {
+        return datos
+      }
+
+      return []
+    } catch {
+      return []
+    }
+  })
+
+  const [mostrarFavoritos, setMostrarFavoritos] = useState(false)
+
   useEffect(() => {
     const controller = new AbortController()
 
@@ -79,31 +104,68 @@ export default function MenuPrincipal() {
     }
   }, [busqueda, intento])
 
+  useEffect(() => {
+    localStorage.setItem('favoritos', JSON.stringify(favoritos))
+  }, [favoritos])
+
   const reintentar = () => {
     setIntento((actual) => actual + 1)
   }
+
+  const alternarFavorito = (id: number) => {
+    setFavoritos((actuales) =>
+      actuales.includes(id)
+        ? actuales.filter((favoritoId) => favoritoId !== id)
+        : [...actuales, id]
+    )
+  }
+
+  const personajesFavoritos = personajes.filter((personaje) =>
+    favoritos.includes(personaje.id)
+  )
+
+  const cambiarVistaFavoritos = () => {
+    setMostrarFavoritos((actual) => !actual)
+    setPersonajeSeleccionado(null)
+  }
+
+  const personajesMostrados = mostrarFavoritos
+    ? personajesFavoritos
+    : personajes
 
   return (
     <main className="menu-principal">
       <header className="menu-header">
         <h1>Rick & Morty</h1>
-        <button>Favoritos</button>
+
+        <button
+          type="button"
+          onClick={cambiarVistaFavoritos}
+        >
+          {mostrarFavoritos
+            ? 'Ver personajes'
+            : `Favoritos (${favoritos.length})`}
+        </button>
       </header>
 
       <section className="menu-contenido">
-        <h2>Personajes</h2>
+        <h2>
+          {mostrarFavoritos ? 'Mis favoritos' : 'Personajes'}
+        </h2>
 
-        <BarraBusqueda
-          valor={busqueda}
-          onChange={setBusqueda}
-        />
+        {!mostrarFavoritos && (
+          <BarraBusqueda
+            valor={busqueda}
+            onChange={setBusqueda}
+          />
+        )}
 
         {personajeSeleccionado ? (
           <DetalleElemento
             personaje={personajeSeleccionado}
             onVolver={() => setPersonajeSeleccionado(null)}
           />
-        ) : error ? (
+        ) : error && !mostrarFavoritos ? (
           <div className="estado-error">
             <EstadoMensaje
               type="error"
@@ -115,20 +177,26 @@ export default function MenuPrincipal() {
               deshabilitado={loading}
             />
           </div>
-        ) : loading ? (
+        ) : loading && !mostrarFavoritos ? (
           <EstadoMensaje
             type="cargando"
             message="Cargando personajes..."
           />
-        ) : personajes.length === 0 ? (
+        ) : personajesMostrados.length === 0 ? (
           <EstadoMensaje
             type="vacio"
-            message="No se encontraron personajes."
+            message={
+              mostrarFavoritos
+                ? 'No tienes personajes favoritos.'
+                : 'No se encontraron personajes.'
+            }
           />
         ) : (
           <ListaElementos
-            personajes={personajes}
+            personajes={personajesMostrados}
             onSeleccionar={setPersonajeSeleccionado}
+            favoritos={favoritos}
+            onAlternarFavorito={alternarFavorito}
           />
         )}
       </section>
