@@ -1,75 +1,128 @@
-# React + TypeScript + Vite
+# Electiva 1 - Consumo de API
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web desarrollada con React, TypeScript y Vite para el consumo de una API pública de personajes de **Rick and Morty**.
 
-Currently, two official plugins are available:
+El proyecto permite consultar personajes, buscar por nombre, visualizar información detallada, gestionar favoritos y manejar diferentes estados de carga de la aplicación.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tecnologías utilizadas
 
-## React Compiler
+* React
+* TypeScript
+* Vite
+* CSS
+* API de Rick and Morty
+* Fetch API
+* LocalStorage
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Funcionalidades
 
-## Expanding the ESLint configuration
+### RF-01 - Listado de personajes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Consulta de personajes mediante la API.
+* Visualización de al menos 20 personajes.
+* Cada personaje muestra información como nombre, estado y especie.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### RF-02 - Estados de la aplicación
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* Estado de carga.
+* Estado de error.
+* Estado sin resultados.
+* Estado exitoso.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### RF-03 - Búsqueda
 
+* Campo de búsqueda controlado.
+* Búsqueda de personajes por nombre.
+* Retraso de 400 ms mediante `setTimeout`.
+* Limpieza del temporizador mediante `useEffect`.
+
+### RF-04 - Detalle de personaje
+
+* Selección de un personaje.
+* Visualización de información adicional.
+* Opción para regresar al listado.
+
+### RF-05 - Favoritos
+
+* Marcar y desmarcar personajes como favoritos.
+* Contador de personajes favoritos.
+* Visualización de favoritos.
+* Persistencia mediante `localStorage`.
+
+### RF-06 - Reintento
+
+* Manejo de errores durante las solicitudes.
+* Botón para reintentar la carga sin recargar la página.
+
+## Estructura del proyecto
+
+```text
+src/
+├── components/
+│   ├── BarraBusqueda.tsx
+│   ├── BotonReintentar.tsx
+│   ├── DetalleElemento.tsx
+│   ├── EstadoMensaje.tsx
+│   ├── ListaElementos.tsx
+│   ├── MenuPrincipal.tsx
+│   └── TarjetaElementos.tsx
+├── services/
+│   └── api.ts
+├── styles/
+│   ├── BarraBusqueda.css
+│   ├── BotonReintentar.css
+│   ├── MenuPrincipal.css
+│   └── TarjetaElementos.css
+├── types/
+│   └── api.ts
+└── main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Instalación
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Clonar el repositorio:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone https://github.com/anachica20/Electiva1-consumo-api-anachica-samuelrestrepo.git
 ```
+
+Ingresar al proyecto:
+
+```bash
+cd Electiva1-consumo-api-anachica-samuelrestrepo
+```
+
+Instalar las dependencias:
+
+```bash
+npm install
+```
+
+Ejecutar el proyecto en desarrollo:
+
+```bash
+npm run dev
+```
+
+## Construcción del proyecto
+
+Para generar la versión de producción:
+
+```bash
+npm run build
+```
+
+## Integrantes
+
+* Ana Chica
+* Samuel Restrepo
+
+## API utilizada
+
+Rick and Morty API.
+
+https://rickandmortyapi.com/
+
+## Código de verificación
+
+Codigo de verificacion del enunciado: VRF-7QK2
