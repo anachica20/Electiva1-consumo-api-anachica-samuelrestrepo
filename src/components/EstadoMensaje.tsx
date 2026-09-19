@@ -1,4 +1,4 @@
-import 'styles/EstadoMensaje.css'
+import '../styles/EstadoMensaje.css'
 
 export interface EstadoMensajeProps {
   type: 'cargando' | 'error' | 'vacio'
