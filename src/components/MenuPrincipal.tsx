@@ -1,18 +1,29 @@
 import '../styles/MenuPrincipal.css'
+
 import { useEffect, useState } from 'react'
+
 import type { Character } from '../types/api'
+
 import { getCharacters, getCharactersByName } from '../services/api'
+
 import EstadoMensaje from './EstadoMensaje'
+
 import ListaElementos from './ListaElementos'
+
 import DetalleElemento from './DetalleElemento'
+
 import BarraBusqueda from './BarraBusqueda'
+
+import BotonReintentar from './BotonReintentar'
 
 export default function MenuPrincipal() {
   const [personajes, setPersonajes] = useState<Character[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [personajeSeleccionado, setPersonajeSeleccionado] = useState<Character | null>(null)
+  const [personajeSeleccionado, setPersonajeSeleccionado] =
+    useState<Character | null>(null)
   const [busqueda, setBusqueda] = useState('')
+  const [intento, setIntento] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -59,14 +70,18 @@ export default function MenuPrincipal() {
     }
 
     const timeout = setTimeout(() => {
-      cargarPersonajes()
+      void cargarPersonajes()
     }, 400)
 
     return () => {
       clearTimeout(timeout)
       controller.abort()
     }
-  }, [busqueda])
+  }, [busqueda, intento])
+
+  const reintentar = () => {
+    setIntento((actual) => actual + 1)
+  }
 
   return (
     <main className="menu-principal">
@@ -88,15 +103,22 @@ export default function MenuPrincipal() {
             personaje={personajeSeleccionado}
             onVolver={() => setPersonajeSeleccionado(null)}
           />
+        ) : error ? (
+          <div className="estado-error">
+            <EstadoMensaje
+              type="error"
+              message={error}
+            />
+
+            <BotonReintentar
+              onReintentar={reintentar}
+              deshabilitado={loading}
+            />
+          </div>
         ) : loading ? (
           <EstadoMensaje
             type="cargando"
             message="Cargando personajes..."
-          />
-        ) : error ? (
-          <EstadoMensaje
-            type="error"
-            message={error}
           />
         ) : personajes.length === 0 ? (
           <EstadoMensaje
