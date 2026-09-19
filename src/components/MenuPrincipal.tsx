@@ -1,16 +1,18 @@
 import '../styles/MenuPrincipal.css'
 import { useEffect, useState } from 'react'
 import type { Character } from '../types/api'
-import { getCharacters } from '../services/api'
+import { getCharacters, getCharactersByName } from '../services/api'
 import EstadoMensaje from './EstadoMensaje'
 import ListaElementos from './ListaElementos'
 import DetalleElemento from './DetalleElemento'
+import BarraBusqueda from './BarraBusqueda'
 
 export default function MenuPrincipal() {
   const [personajes, setPersonajes] = useState<Character[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [personajeSeleccionado, setPersonajeSeleccionado] = useState<Character | null>(null)
+  const [busqueda, setBusqueda] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -20,10 +22,26 @@ export default function MenuPrincipal() {
       setError(null)
 
       try {
-        const data = await getCharacters(controller.signal)
-        setPersonajes(data.results)
+        if (busqueda.trim() === '') {
+          const data = await getCharacters(controller.signal)
+          setPersonajes(data.results)
+        } else {
+          const data = await getCharactersByName(
+            busqueda,
+            controller.signal
+          )
+
+          if (data === null) {
+            setPersonajes([])
+          } else {
+            setPersonajes(data.results)
+          }
+        }
       } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
+        if (
+          error instanceof DOMException &&
+          error.name === 'AbortError'
+        ) {
           return
         }
 
@@ -40,12 +58,15 @@ export default function MenuPrincipal() {
       }
     }
 
-    cargarPersonajes()
+    const timeout = setTimeout(() => {
+      cargarPersonajes()
+    }, 400)
 
     return () => {
+      clearTimeout(timeout)
       controller.abort()
     }
-  }, [])
+  }, [busqueda])
 
   return (
     <main className="menu-principal">
@@ -56,7 +77,11 @@ export default function MenuPrincipal() {
 
       <section className="menu-contenido">
         <h2>Personajes</h2>
-        <div className="busqueda-placeholder">Buscar personaje...</div>
+
+        <BarraBusqueda
+          valor={busqueda}
+          onChange={setBusqueda}
+        />
 
         {personajeSeleccionado ? (
           <DetalleElemento
@@ -64,9 +89,15 @@ export default function MenuPrincipal() {
             onVolver={() => setPersonajeSeleccionado(null)}
           />
         ) : loading ? (
-          <EstadoMensaje type="cargando" message="Cargando personajes..." />
+          <EstadoMensaje
+            type="cargando"
+            message="Cargando personajes..."
+          />
         ) : error ? (
-          <EstadoMensaje type="error" message={error} />
+          <EstadoMensaje
+            type="error"
+            message={error}
+          />
         ) : personajes.length === 0 ? (
           <EstadoMensaje
             type="vacio"
