@@ -50,3 +50,15 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
+
+.tarjeta-elementos__favorito {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 12px;
+    border: 1px solid #4ade80;
+    border-radius: 8px;
+    background: transparent;
+    color: #f8fafc;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
