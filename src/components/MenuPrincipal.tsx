@@ -5,6 +5,7 @@ import { getCharacters } from '../services/api'
 import EstadoMensaje from './EstadoMensaje'
 import ListaElementos from './ListaElementos'
 import DetalleElemento from './DetalleElemento'
+import BotonReintentar from './BotonReintentar'
 
 export default function MenuPrincipal() {
   const [personajes, setPersonajes] = useState<Character[]>([])
@@ -12,17 +13,43 @@ export default function MenuPrincipal() {
   const [error, setError] = useState<string | null>(null)
   const [personajeSeleccionado, setPersonajeSeleccionado] = useState<Character | null>(null)
 
+  const cargarPersonajes = async (signal?: AbortSignal) => {
+    try {
+      const data = await getCharacters(signal)
+      setPersonajes(data.results)
+      setError(null)
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return
+      }
+
+      const mensaje =
+        error instanceof Error
+          ? error.message
+          : 'No fue posible cargar los personajes'
+
+      setError(mensaje)
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false)
+      }
+    }
+  }
+
+  const reintentar = () => {
+    setLoading(true)
+    void cargarPersonajes()
+  }
+
   useEffect(() => {
     const controller = new AbortController()
 
-    const cargarPersonajes = async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const data = await getCharacters(controller.signal)
+    getCharacters(controller.signal)
+      .then((data) => {
         setPersonajes(data.results)
-      } catch (error) {
+        setError(null)
+      })
+      .catch((error) => {
         if (error instanceof DOMException && error.name === 'AbortError') {
           return
         }
@@ -33,14 +60,12 @@ export default function MenuPrincipal() {
             : 'No fue posible cargar los personajes'
 
         setError(mensaje)
-      } finally {
+      })
+      .finally(() => {
         if (!controller.signal.aborted) {
           setLoading(false)
         }
-      }
-    }
-
-    cargarPersonajes()
+      })
 
     return () => {
       controller.abort()
@@ -63,11 +88,18 @@ export default function MenuPrincipal() {
             personaje={personajeSeleccionado}
             onVolver={() => setPersonajeSeleccionado(null)}
           />
+        ) : error ? (
+          <div className="estado-error">
+            <EstadoMensaje type="error" message={error} />
+            <BotonReintentar
+              onReintentar={reintentar}
+              deshabilitado={loading}
+            />
+          </div>
         ) : loading ? (
           <EstadoMensaje type="cargando" message="Cargando personajes..." />
-        ) : error ? (
-          <EstadoMensaje type="error" message={error} />
         ) : personajes.length === 0 ? (
+
           <EstadoMensaje
             type="vacio"
             message="No se encontraron personajes."
